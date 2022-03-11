@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>WebTerminal to Destination...</title>
+        <style type="text/css">
+            label {
+                display: inline-block;
+                width: 120px;
+                margin: 5px;
+                text-align: right;
+            }
+            input[type=text], input[type=password], input[type=number] {
+                display: inline-block;
+                width: 200px;
+            }
+            input[type=radio] {
+                margin-left: 45px;
+            }
+            input[type=checkbox] {
+                margin-right: 190px;
+            }
+            button {
+                padding: 5px;
+                margin: 10px;
+            }
+            select
+            {
+                display: inline-block;
+                width: 208px;
+                padding: 2px;
+            }
+            a:link, a:visited {
+                background-color: lightgray;
+                color: black;
+                padding: 8px 16px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            a:hover, a:active {
+                background-color: green;
+            }
+            button[type=submit] {
+                background-color: #04AA6D;
+                border: none;
+                color: white;
+                padding: 10px 30px;
+                text-decoration: none;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>Destination Host Details</h1>
+            <form action="#" th:action="@{/restricted/go}" method="post" th:object="${request}">
+
+                <label>Description</label>
+                <input type="text" th:field="*{description}" autofocus></textarea><br/>
+
+                <label>Host</label>
+                <input type="text" th:field="*{host}" /><br/>
+
+                <label>Port</label>
+                <input type="number" min="2" th:field="*{port}" /><br/>
+
+                <label>ConnectionType</label>
+                <select th:field="*{connectionType}">
+                    <option th:each="p : ${connectionType}" th:value="${p}" th:text="${p}" />
+                </select><br/>
+
+                <label>Use PTY (better compatibility)?</label>
+                <input type="checkbox" th:field="*{usePty}" /><br/>
+
+                <label>Username</label>
+                <input type="text" th:field="*{username}" /><br/>
+
+                <label>Password</label>
+                <input type="password" th:field="*{password}" /><br/>
+
+                <label>AuditLogging</label>
+                <select th:field="*{auditLogging}">
+                    <option th:each="p : ${auditLogging}" th:value="${p}" th:text="${p}" />
+                </select><br/>
+
+                <label>Max IdleTime (minutes)</label>
+                <input type="number" th:field="*{maxIdleTime}" /><br/>
+
+                <label>FontSize</label>
+                <input type="number" min="10" max="40" th:field="*{fontSize}" /><br/>
+
+                <label>Visible to All</label>
+                <input type="checkbox" th:field="*{visibleToAll}" /><br/>
+
+                <br/>
+
+                <span th:text="${message}"></span><br/><br/>
+
+                <a th:href="@{/logout}">Sign Out</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="submit">Go</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/restricted/sessions">Sessions</a>
+            </form>
+        </div>
+    </body>
+</html>

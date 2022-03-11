@@ -1,0 +1,47 @@
+logging:
+  level:
+    org.webterminal: INFO
+
+#debug: true
+#trace: true
+
+server:
+  port: 8443
+  servlet:
+    session:
+      persistent: false
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/webterminal.p12
+    key-store-password: 4webterminal
+    key-alias: webterminal
+    enabled: true
+
+#  tomcat:
+#    compression: on
+#    compressableMimeTypes=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript
+
+spring:
+  mvc:
+    view:
+      prefix: /page/
+      suffix: .html
+  thymeleaf:
+    cache: false  
+    suffix: .html
+  jackson:
+    serialization:
+      indent_output: true
+
+# app specific
+webterminal:
+  cronTokens: '30 * * * * *'
+  cronSessions: '0 * * * * *'
+  # allow internal requests from UI on localhost only:
+  acl: hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')
+  # how many seconds a token remains valid
+  tokenTTL: 60
+  ptyNonBlockingMatch: true
+  auditLogDir: /tmp
+  userFile:
+  #userFile: /tmp/users.csv

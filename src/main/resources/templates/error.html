@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>WebTerminal Error</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+    <center>
+        <h1>You tried to access a page/resource/service not provisioned</h1>
+        <h2>If you think this is in error, please file a bug report</h2>
+    </center>
+    <p th:if="${url}">
+        <b>Page:</b> <span th:text="${url}">Page URL</span>
+    </p>
+
+    <p th:if="${timestamp}" id='created'>
+        <b>When:</b> <span th:text="${timestamp}">Timestamp</span>
+    </p>
+
+    <p th:if="${status}">
+        <b>Response Status:</b> <span th:text="${status}">status-code</span>
+        <span th:if="${error}" th:text="'('+${error}+')'">error ...</span>
+    </p>
+
+</body>
+</html>
