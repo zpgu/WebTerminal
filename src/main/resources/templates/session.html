@@ -1,100 +1,106 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-    <html>
-        <head>
-            <title>[[${title}]]</title>
-            <link rel="stylesheet" href="../css/xterm.css"/>
-        </head>
-        <body>
-            <h3><span th:text="|${title}|"></span></h3>
-            <div id="msg"></div>
-            <input th:if="${canSuspend}" id="Suspend" type="button" value="Suspend" onclick="suspend();"/>
+    <head>
+        <title>[[${title}]]</title>
+        <link rel="stylesheet" href="../css/xterm.css"/>
+    </head>
+    <body>
+        <h3><span th:text="|${title}|"></span></h3>
+        <div id="msg"></div>
+        <input th:if="${canSuspend}" id="Disconnect" type="button" value="Disconnect" onclick="actions.disconnect();"/>
+        <input th:if="${canSuspend}" id="Suspend" type="button" value="Suspend" onclick="actions.suspend();"/>
+        <div vertical-align="middle" id="terminal" style="width: 100%;height: 82vh"></div>
 
-            <div vertical-align="middle" id="terminal" style="width: 100%;height: 82vh"></div>
-
-            <script src="../js/jquery-3.6.0.min.js"></script>
-            <script src="../js/xterm-4.18.0.js" charset="utf-8"></script>
-            <script th:if="${resize}" src="../js/xterm-addon-fit.js" charset="utf-8"></script>
-            <script src="../js/webterminal.js" charset="utf-8"></script>
-            <script th:inline="javascript">
-                var suspend = openTerminal({
-                    token: [[${token}]]
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/xterm-4.18.0.js" charset="utf-8"></script>
+        <script th:if="${resize}" src="../js/xterm-addon-fit.js" charset="utf-8"></script>
+        <script src="../js/webterminal.js" charset="utf-8"></script>
+        <script th:inline="javascript">
+            var actions = openTerminal({
+                token: [[${token}]]
+            });
+            function openTerminal(options) {
+                var client = new WebTerminalClient();
+                var term = new Terminal({
+                cols: [[${cols}]],
+                    rows: [[${rows}]],
+                    fontSize: [[${fontSize}]],
+                    cursorBlink: true,
+                    cursorStyle: "block", //  null | "block" | "underline" | "bar"
+                    scrollback: 8192,
+                    tabStopWidth: 8,
+                    screenKeys: true
                 });
-                function openTerminal(options) {
-                    var client = new WebTerminalClient();
-                    var term = new Terminal({
-                        cols: [[${cols}]],
-                        rows: [[${rows}]],
-                        fontSize: [[${fontSize}]],
-                        cursorBlink: true,
-                        cursorStyle: "block", //  null | "block" | "underline" | "bar"
-                        scrollback: 8192,
-                        tabStopWidth: 8,
-                        screenKeys: true
-                    });
-
-                    term.onData(function (data) {
-                        client.sendOutData({t: "d", p: data});
-                    });
-                    [# th:if="${resize}"]
-                    const fitAddon = new FitAddon.FitAddon();
-                    term.loadAddon(fitAddon);
-                    [/]                   
-                    term.open(document.getElementById("terminal"));
-                    [# th:if="${resize}"]
-                    fitAddon.fit();
-                    [/]
-                    term.focus();
-
-                    term.write("Connecting...\r\n");
-                    client.connect({
-                        onError: function (error) {
-                            term.write("Error: " + error + "\r\n");
-                        },
-                        onConnect: function () {
-                            client.sendOutData({t: "connect", p: JSON.stringify({token: options.token, cols: term.cols, rows: term.rows})});
-                        },
-                        onClose: function () {
-                            term.write("\r\nConnection Closed");
-                        },
-                        onData: function (data) {
-                            if (typeof data === "string") {
-                                var fromServer = JSON.parse(data);
-                                if (fromServer.t === 'e') {
-                                    term.write(atob(fromServer.p));
-                                } else if (fromServer.t === 'n') {
-                                    term.write(fromServer.p);
-                                } else if (fromServer.t === 's') {
-                                    var rowsCols = JSON.parse(fromServer.p);
-                                    term.resize(rowsCols.cols, rowsCols.rows);
-                                } else if (fromServer.t === 'm') {
-                                    var div = document.getElementById("msg");
-                                    //div.innerHTML = fromServer.p;
-                                    div.innerText = fromServer.p;
-                                } else {
-                                    console.log("unknown data: " + fromServer);
-                                }
-                            } else if (data instanceof Blob || data instanceof ArrayBuffer) {
-                                const reader = new FileReader();
-                                reader.addEventListener('loadend', (evt) => {
-                                    //term.write(reader.result);
-                                    term.write(evt.target.result);
-                                });
-                                reader.readAsText(data);
+                term.onData(function (data) {
+                    client.sendOutData({t: "d", p: data});
+                });
+                [# th:if = "${resize}"]
+                const fitAddon = new FitAddon.FitAddon();
+                term.loadAddon(fitAddon);
+                [/]
+                term.open(document.getElementById("terminal"));
+                [# th:if = "${resize}"]
+                fitAddon.fit();
+                [/]
+                term.focus();
+                term.write("Connecting...\r\n");
+                client.connect({
+                    onError: function (error) {
+                        term.write("Error: " + error + "\r\n");
+                    },
+                    onConnect: function () {
+                        client.sendOutData({t: "connect", p: JSON.stringify({token: options.token, cols: term.cols, rows: term.rows})});
+                    },
+                    onClose: function () {
+                        term.write("\r\nConnection Closed");
+                    },
+                    onData: function (data) {
+                        if (typeof data === "string") {
+                            var fromServer = JSON.parse(data);
+                            if (fromServer.t === 'e') {
+                                term.write(atob(fromServer.p));
+                            } else if (fromServer.t === 'n') {
+                                term.write(fromServer.p);
+                            } else if (fromServer.t === 's') {
+                                var rowsCols = JSON.parse(fromServer.p);
+                                term.resize(rowsCols.cols, rowsCols.rows);
+                            } else if (fromServer.t === 'm') {
+                                var div = document.getElementById("msg");
+                                //div.innerHTML = fromServer.p;
+                                div.innerText = fromServer.p;
+                            } else {
+                                console.log("unknown data: " + fromServer);
                             }
+                        } else if (data instanceof Blob || data instanceof ArrayBuffer) {
+                            const reader = new FileReader();
+                            reader.addEventListener("loadend", function (evt) {
+                                //term.write(reader.result);
+                                term.write(evt.target.result);
+                            });
+                            reader.readAsText(data);
                         }
-                    });
-                    [# th:if="${resize}"]
-                    function resizeScreen() {
-                        fitAddon.fit();
-                        client.sendOutData({t: "resize", p: JSON.stringify({cols: term.cols, rows: term.rows})});
                     }
-                    window.addEventListener("resize", resizeScreen, {once: false});
-                    [/]
-                    return function () {
-                        client.sendOutData({t: "suspend", p: options.token});
-                    };
+                });
+                [# th:if = "${resize}"]
+                function resizeScreen() {
+                    fitAddon.fit();
+                    client.sendOutData({t: "resize", p: JSON.stringify({cols: term.cols, rows: term.rows})});
                 }
-            </script>
-        </body>
-    </html>
+                window.addEventListener("resize", resizeScreen, {once: false});
+                window.addEventListener("beforeunload", function (evt) {
+                    actions.suspend();
+                    return undefined;
+                });
+                return {
+                    suspend: function () {
+                        client.sendOutData({t: "suspend", p: options.token});
+                    },
+                    disconnect: function () {
+                        client.sendOutData({t: "disconnect", p: options.token});
+                    },
+                }
+                [/]
+            }
+        </script>
+    </body>
+</html>

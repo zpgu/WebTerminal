@@ -40,6 +40,11 @@ public class Constants {
     public static final String CLIENT_SUSPEND = "suspend";
 
     /**
+     *
+     */
+    public static final String CLIENT_DISCONNECT = "disconnect";
+
+    /**
      * save a few bytes (instead of "data"), as it's frequently used
      */
     public static final String CLIENT_DATA = "d";  // save a few bytes for client

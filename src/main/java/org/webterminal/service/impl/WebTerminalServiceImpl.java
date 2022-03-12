@@ -29,6 +29,7 @@ import org.webterminal.connection.impl.TelnetConnection;
 import org.webterminal.constant.Constants;
 import static org.webterminal.constant.Constants.CLIENT_CONNECT;
 import static org.webterminal.constant.Constants.CLIENT_SUSPEND;
+import static org.webterminal.constant.Constants.CLIENT_DISCONNECT;
 import static org.webterminal.constant.Constants.CLIENT_DATA;
 import static org.webterminal.constant.Constants.NEW;
 import static org.webterminal.constant.Constants.SESSION_UUID;
@@ -230,6 +231,19 @@ public class WebTerminalServiceImpl implements WebTerminalService {
                 // no idle timeout, otherwise defeats purpose of suspend as connection will be reaped
                 connection.getTerminalSessionInfo().setMaxIdleTime(0);
             }
+        } else if (CLIENT_DISCONNECT.equals(clientMessage.getT())) {
+            logger.debug("disconnect received: {}", clientMessage);
+            Connection connection = tokenToRootConnection(clientMessage.getP());
+
+            // match toplevel session, can only disconnect own session, session is NEW type
+            if (connection != null
+                    && connection.getTerminalSessionInfo().getSessionId().equals(sessionId)
+                    && connection.getTerminalSessionInfo().getSessionType().equalsIgnoreCase("NEW")) {
+                logger.debug("ok to disconnect {}", clientMessage);
+
+                sendOOBMessage(webSocketSession, "Session Disconnecting");
+                connectionClose(connection);
+            }
         } else if (CLIENT_RESIZE.equals(clientMessage.getT())) {
             logger.debug("resize received {}", clientMessage);
 
@@ -307,6 +321,7 @@ public class WebTerminalServiceImpl implements WebTerminalService {
 
     /**
      * complete teardown
+     *
      * @param connection
      */
     public static void connectionClose(Connection connection) {
