@@ -38,11 +38,13 @@ default logins:
 UI is plain/ugly/incomplete but functional, definitely could use polish/functionality. From there, you can start new terminal sessions,
 or act upon (view/join/...) existing sessions, etc.
 
+Browser support depends on xterm.js, so probably newer versions of major browsers should work.
+
 WebTerminal-0.9-SNAPSHOT.jar (typical Spring Boot fat jar) also takes command line arguments (in addition to all other standard options)
 to read a csv file for GUI access control, and it will reload the file if it ever gets updated, sort of simulating a poor 
 man's CRUD operations for the lack of such an admin interface to manage UI user accounts:
 
-   `java -jar target/WebTerminal-0.9-SNAPSHOT.jar -webterminal.userFile=YourOwnCSVfile.csv`
+   `java -jar target/WebTerminal-0.9-SNAPSHOT.jar --webterminal.userFile=YourOwnCSVfile.csv`
 
 csv file is very simple, with content like this (first line is header, these match the default accounts if not customized):
 ```

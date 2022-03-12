@@ -81,25 +81,32 @@
                         }
                     }
                 });
+                window.addEventListener("beforeunload", function (evt) {
+                    [# th:if = "${resize}"]
+                    actions.suspend();
+                    [/]
+                    [# th:unless = "${resize}"]
+                    actions.disconnect();
+                    [/]
+                    return undefined;
+                });
                 [# th:if = "${resize}"]
                 function resizeScreen() {
                     fitAddon.fit();
                     client.sendOutData({t: "resize", p: JSON.stringify({cols: term.cols, rows: term.rows})});
                 }
                 window.addEventListener("resize", resizeScreen, {once: false});
-                window.addEventListener("beforeunload", function (evt) {
-                    actions.suspend();
-                    return undefined;
-                });
+                [/]
                 return {
+                    [# th:if = "${resize}"]
                     suspend: function () {
                         client.sendOutData({t: "suspend", p: options.token});
                     },
+                    [/]
                     disconnect: function () {
                         client.sendOutData({t: "disconnect", p: options.token});
                     },
                 }
-                [/]
             }
         </script>
     </body>

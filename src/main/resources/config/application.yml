@@ -32,6 +32,9 @@ spring:
   jackson:
     serialization:
       indent_output: true
+  web:
+    resources:
+      cache.period: 1d
 
 # app specific
 webterminal:

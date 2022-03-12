@@ -60,7 +60,7 @@
             <form action="#" th:action="@{/restricted/go}" method="post" th:object="${request}">
 
                 <label>Description</label>
-                <input type="text" th:field="*{description}" autofocus></textarea><br/>
+                <input type="text" th:field="*{description}" autofocus /><br/>
 
                 <label>Host</label>
                 <input type="text" th:field="*{host}" /><br/>

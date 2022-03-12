@@ -214,7 +214,7 @@ public class WebTerminalServiceImpl implements WebTerminalService {
                     sessionClose(webSocketSession);
                 }
             } else {
-                sendOOBMessage(webSocketSession, "Unknown Session for Data, Close Connection");
+                sendOOBMessage(webSocketSession, "Unknown Session for Data");
                 sessionClose(webSocketSession);
             }
         } else if (CLIENT_SUSPEND.equals(clientMessage.getT())) {
@@ -233,16 +233,18 @@ public class WebTerminalServiceImpl implements WebTerminalService {
             }
         } else if (CLIENT_DISCONNECT.equals(clientMessage.getT())) {
             logger.debug("disconnect received: {}", clientMessage);
-            Connection connection = tokenToRootConnection(clientMessage.getP());
+            Connection connection = tokenToConnection(clientMessage.getP());
 
-            // match toplevel session, can only disconnect own session, session is NEW type
+            // disconnect own session
             if (connection != null
-                    && connection.getTerminalSessionInfo().getSessionId().equals(sessionId)
-                    && connection.getTerminalSessionInfo().getSessionType().equalsIgnoreCase("NEW")) {
+                    && connection.getTerminalSessionInfo().getSessionId().equals(sessionId)) {
                 logger.debug("ok to disconnect {}", clientMessage);
 
                 sendOOBMessage(webSocketSession, "Session Disconnecting");
                 connectionClose(connection);
+            }  else {
+                sendOOBMessage(webSocketSession, "Unknown Session for Disconnect");
+                sessionClose(webSocketSession);
             }
         } else if (CLIENT_RESIZE.equals(clientMessage.getT())) {
             logger.debug("resize received {}", clientMessage);
@@ -260,7 +262,7 @@ public class WebTerminalServiceImpl implements WebTerminalService {
                     sessionClose(webSocketSession);
                 }
             } else {
-                sendOOBMessage(webSocketSession, "Unknown Session for Resize, Close Connection");
+                sendOOBMessage(webSocketSession, "Unknown Session for Resize");
                 sessionClose(webSocketSession);
             }
         } else {
@@ -558,6 +560,20 @@ public class WebTerminalServiceImpl implements WebTerminalService {
             connectionClose(connection);
         }
         logger.trace("sessionIdleHouseKeeping end");
+    }
+
+    public static Connection tokenToConnection(String token) {
+        Iterator<Map.Entry<String, Connection>> iterator = SessionMAP.entrySet().iterator();
+
+        while (token != null && iterator.hasNext()) {
+            Map.Entry<String, Connection> entry = iterator.next();
+            Connection connection = entry.getValue();
+            if (connection.getTerminalSessionInfo().getToken().equals(token)) {
+                return connection;
+            }
+        }
+
+        return null;
     }
 
     /**
