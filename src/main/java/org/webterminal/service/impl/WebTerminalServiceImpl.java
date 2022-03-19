@@ -676,7 +676,7 @@ public class WebTerminalServiceImpl implements WebTerminalService {
                 for (String child : children) {
                     Connection connection = SessionMAP.get(child);
                     if (connection != null) {
-                        message += " + " + connection.getTerminalSessionInfo().getWebUserName();
+                        message += " +" + connection.getTerminalSessionInfo().getWebUserName();
                     }
                 }
                 TextMessage msg = toClientMessage(message);

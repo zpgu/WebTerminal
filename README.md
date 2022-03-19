@@ -1,5 +1,5 @@
 # WebTerminal
-#### Command line terminal via web browsers, for SSH/Telnet/TN3270 accesses (xerm.js with Java backend)
+#### Command line terminal via web browsers, for SSH/Telnet/TN3270 accesses (xterm.js with Java backend)
 
 Why another tool for terminal access? Plenty already available (in nodejs/python/...) one could argue, but as always:
 * good to have choices, and not many with Java backend anyway
