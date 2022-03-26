@@ -57,9 +57,10 @@ When starting new sessions, you have the option to make them visible to everyone
 
 While viewing the list of sessions, anyone can get into a visible session, either watch (read only), or join (read/write). Also
 one can take over a visible session if so desired, and become the new owner. Owner can kill a session. Obviously anyone doing
-an exit/logout on a session will terminate the session, as well as if the server side disconnects for whatever reason.
+an exit/logout on a session will terminate the session, as well as if the destination side disconnects for whatever reason.
 
-Session owner can suspend the session (temporarily detach xterm.js front end, and resume later at different time/location).
+Session owner can suspend the session (temporarily detach xterm.js front end, and resume later at different time/location) by click on
+'Suspend' button, or navigating away via broswer "beforeunload" hook if supported.
 
 Everyone on the same session will be updated with current list of participants at all time.
 
