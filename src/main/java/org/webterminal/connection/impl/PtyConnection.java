@@ -140,12 +140,12 @@ public class PtyConnection extends Connection {
             // Windows: ssh/putty must be installed for this to work
             //          funky behavior with space character (both telnet/ssh on Windows)
             //          not a concern because deployment will be on Linux
-            // Use less secure options but max compatibility
+            // less secure options but max compatibility
             String[] sshCmd = {SSH_CMD, "-q",
                 "-oUserKnownHostsFile=/dev/null",
                 "-oStrictHostKeyChecking=no",
                 "-oKexAlgorithms=+diffie-hellman-group1-sha1",
-                "-oHostKeyAlgorithms=+ssh-dss",
+                "-oHostKeyAlgorithms=+ssh-rsa,ssh-dss",
                 "-p", terminalSessionInfo.getPort().toString(),
                 "-l", terminalSessionInfo.getUsername(),
                 terminalSessionInfo.getHost()

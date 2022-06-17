@@ -1,9 +1,9 @@
 # WebTerminal
 #### Command line terminal via web browsers, for SSH/Telnet/TN3270 accesses (xterm.js with Java backend)
 
-Why another tool for terminal access? Plenty already available (in nodejs/python/...) one could argue, but as always:
-* good to have choices, and not many with Java backend anyway
-* it has some unique features
+Why another tool for terminal access? Plenty already available (in nodejs/python/...):
+* good to have choices, not many with Java backend anyway
+* some unique features (session/screen sharing/suspend/resume)
 
 This application provides **terminal** access to any device that it can reach,  presenting it in your browser (w/ xterm.js),
 features include session sharing, suspend/resume sessions, multiple modes of access (ssh/telnet/tn3270) to various types of target
