@@ -22,20 +22,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 //import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 //@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
@@ -45,8 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${webterminal.userFile}")
     private String userFile;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/internal/**").access(acl)
@@ -73,21 +73,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
                 .defaultSuccessUrl("/restricted/jumpbox", true)
                 .failureUrl("/login?error=true");
+
+        return http.build();
     }
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         logger.debug("AUTH userFile [{}]", userFile);
-
-        InMemoryUserDetailsManager mgr = inMemoryUserDetailsManager();
-
-        CsvAuthFileLoader watchFile = new CsvAuthFileLoader(userFile, mgr);
+        
+        InMemoryUserDetailsManager mgr = new InMemoryUserDetailsManager();
+        
+        CsvAuthFileLoader watchFile = new CsvAuthFileLoader(userFile, mgr, passwordEncoder);
         watchFile.reload();
         watchFile.start();
-
-        auth.userDetailsService(mgr);
+        
+        return mgr;
     }
-
+    
     /**
      *
      * @return
@@ -95,13 +97,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-        return new InMemoryUserDetailsManager();
     }
 }

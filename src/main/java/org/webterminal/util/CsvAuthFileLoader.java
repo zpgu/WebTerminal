@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -38,17 +37,19 @@ public class CsvAuthFileLoader extends FileWatchdog {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CsvAuthFileLoader.class);
     private final InMemoryUserDetailsManager mgr;
     private static HashMap<String, String> loaded = new HashMap<>();
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     /**
      *
      * @param filename
      * @param mgr
+     * @param passwordEncoder
      */
-    public CsvAuthFileLoader(String filename, InMemoryUserDetailsManager mgr) {
+    public CsvAuthFileLoader(String filename, InMemoryUserDetailsManager mgr, PasswordEncoder passwordEncoder) {
         super(filename);
         this.mgr = mgr;
-
+        this.passwordEncoder = passwordEncoder;
+        
         logger.debug("cstor CsvUserFileLoader filename [{}]", filename);
 
         // put some default starter accounts
@@ -74,10 +75,11 @@ public class CsvAuthFileLoader extends FileWatchdog {
         if (StringUtils.isNotBlank(filename) && mgr != null) {
             try {
                 logger.debug("read auth csv filename {}", filename);
-                File file = new File(filename);
-                InputStream in = new FileInputStream(file);
-                List<CsvUserInfo> userList = CsvFileReader.read(CsvUserInfo.class, in);
-                in.close();
+                File cfile = new File(filename);
+                List<CsvUserInfo> userList;
+                try (InputStream in = new FileInputStream(cfile)) {
+                    userList = CsvFileReader.read(CsvUserInfo.class, in);
+                }
                 logger.trace("{} CONTENT {}", filename, userList);
                 HashMap<String, String> newload = new HashMap<>();
                 for (CsvUserInfo user : userList) {

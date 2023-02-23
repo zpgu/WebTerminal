@@ -11,8 +11,8 @@
         <input th:if="${canSuspend}" id="Suspend" type="button" value="Suspend" onclick="actions.suspend();"/>
         <div vertical-align="middle" id="terminal" style="width: 100%;height: 82vh"></div>
 
-        <script src="../js/jquery-3.6.0.min.js"></script>
-        <script src="../js/xterm-4.18.0.js" charset="utf-8"></script>
+        <script src="../js/jquery-3.6.3.min.js"></script>
+        <script src="../js/xterm-4.19.0.js" charset="utf-8"></script>
         <script th:if="${resize}" src="../js/xterm-addon-fit.js" charset="utf-8"></script>
         <script src="../js/webterminal.js" charset="utf-8"></script>
         <script th:inline="javascript">
