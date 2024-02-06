@@ -3,13 +3,12 @@
 
 Why another tool for terminal access? Plenty already available (in nodejs/python/...):
 * good to have choices, not many with Java backend anyway
-* some unique features (session/screen sharing/suspend/resume)
+* some unique features (session sharing/suspend/resume, screen size propagation)
 
-This application provides **terminal** access to any device that it can reach,  presenting it in your browser (w/ xterm.js),
+This application provides **terminal** access to any device that it can reach, presenting it in your browser (w/ xterm.js),
 features include session sharing, suspend/resume sessions, multiple modes of access (ssh/telnet/tn3270) to various types of target
 devices, maximum compatibility using pty access to some difficult/crusty old telnet devices, such as terminal/console servers that
-convert serial ports for legacy servers/network elements. It even provides a way to access TN3270 mainframe hosts: you read it right,
-mainframes are still around.
+convert serial ports for legacy servers/network elements. It even provides a way to access TN3270 mainframe hosts in pty/c3270 mode.
 
 ### Spring boot with xterm.js, websocket for bidirectional data flow, pty for compatibility/flexibility
 
@@ -25,7 +24,7 @@ Requirements:
 - git clone https://github.com/zpgu/WebTerminal
 - cd WebTerminal
 - mvn clean install
-- java -jar target/WebTerminal-0.9-SNAPSHOT.jar
+- java -jar target/WebTerminal-0.9-SNAPSHOT.jar                   (add --debug for debug output)
 ```
 
 Now navigate your browser to:
@@ -57,14 +56,14 @@ When starting new sessions, you have the option to make them visible to everyone
 
 While viewing the list of sessions, anyone can get into a visible session, either watch (read only), or join (read/write). Also
 one can take over a visible session if so desired, and become the new owner. Owner can kill a session. Obviously anyone doing
-an exit/logout on a session will terminate the session, as well as if the destination side disconnects for whatever reason.
+an exit/logout on a session will terminate the underlying network connection/session, as well as if the destination side disconnects for whatever reason.
 
 Session owner can suspend the session (temporarily detach xterm.js front end, and resume later at different time/location) by click on
 'Suspend' button, or navigating away via broswer "beforeunload" hook if supported.
 
 Everyone on the same session will be updated with current list of participants at all time.
 
-Terminal size propagation from session owner to all joined sessions whenever terminal is resized by owner.
+Terminal size propagation from session owner to all joined sessions whenever terminal is resized by owner (websocket bidirectional dataflow).
 
 Session interaction can be logged to a file on the server (default in /tmp directory on server, for review/audit later for example).
 

@@ -39,6 +39,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.webterminal.util.AuditLogging;
 import static org.webterminal.service.impl.WebTerminalServiceImpl.sendResizeToChildren;
 import com.pty4j.WinSize;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -215,7 +216,7 @@ public class PtyConnection extends Connection {
     public void send(String command) throws IOException {
         if (isAlive()) {
             OutputStream outputStream = ptyProcess.getOutputStream();
-            outputStream.write(command.getBytes());
+            outputStream.write(command.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
 
             terminalSessionInfo.setTrafficTimeNow();

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.telnet.EchoOptionHandler;
 import org.apache.commons.net.telnet.InvalidTelnetOptionException;
@@ -127,7 +128,7 @@ public class TelnetConnection extends Connection {
     public void send(String data) throws IOException {
         if (isAlive()) {
             OutputStream outputStream = telnet.getOutputStream();
-            outputStream.write(data.getBytes());
+            outputStream.write(data.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
 
             terminalSessionInfo.setTrafficTimeNow();

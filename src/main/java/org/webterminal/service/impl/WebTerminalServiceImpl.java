@@ -50,6 +50,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -672,14 +673,16 @@ public class WebTerminalServiceImpl implements WebTerminalService {
         if (parent != null) {  // could be null
             List<String> children = parent.getTerminalSessionInfo().getChildren();
             if (children != null) {
-                String message = "JOINED: " + parent.getTerminalSessionInfo().getWebUserName();
+                StringBuilder buf = new StringBuilder("JOINED: ");
+                buf.append(parent.getTerminalSessionInfo().getWebUserName());
                 for (String child : children) {
                     Connection connection = SessionMAP.get(child);
                     if (connection != null) {
-                        message += " +" + connection.getTerminalSessionInfo().getWebUserName();
+                        buf.append(" +");
+                        buf.append(connection.getTerminalSessionInfo().getWebUserName());
                     }
                 }
-                TextMessage msg = toClientMessage(message);
+                TextMessage msg = toClientMessage(buf.toString());
 
                 for (String child : children) {
                     Connection connection = SessionMAP.get(child);
@@ -745,7 +748,7 @@ public class WebTerminalServiceImpl implements WebTerminalService {
      */
     public static TextMessage toClientBytes(byte[] message) throws JsonProcessingException {
         // as normal string, instead of encoded           (n) type string
-        TwoWayMessage toClient = new TwoWayMessage("n", new String(message));
+        TwoWayMessage toClient = new TwoWayMessage("n", new String(message, StandardCharsets.UTF_8));
         String json = objectMapper.writeValueAsString(toClient);
         return new TextMessage(json);
 

@@ -7,7 +7,7 @@
     <body>
         <h3><span th:text="|${title}|"></span></h3>
         <div id="msg"></div>
-        <input th:if="${canSuspend}" id="Disconnect" type="button" value="Disconnect" onclick="actions.disconnect();"/>
+        <input th:if="${canSuspend}" id="Disconnect" type="button" value="Terminate" onclick="actions.disconnect();"/>
         <input th:if="${canSuspend}" id="Suspend" type="button" value="Suspend" onclick="actions.suspend();"/>
         <div vertical-align="middle" id="terminal" style="width: 100%;height: 82vh"></div>
 

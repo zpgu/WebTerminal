@@ -21,6 +21,7 @@ import org.webterminal.pojo.TerminalSessionInfo;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import static java.lang.System.arraycopy;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -120,7 +121,7 @@ public class AuditLoggingToFile implements AuditLogging {
 
             if (terminalSessionInfo.getLogWriter() != null) {
                 try {
-                    terminalSessionInfo.getLogWriter().write(new String(data));
+                    terminalSessionInfo.getLogWriter().write(new String(data, StandardCharsets.UTF_8));
                 } catch (IOException ex) {
                     logger.warn("logTraffic failed to write: {}", ex.getMessage());
                 }

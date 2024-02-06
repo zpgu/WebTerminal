@@ -36,7 +36,7 @@ public class CsvAuthFileLoader extends FileWatchdog {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CsvAuthFileLoader.class);
     private final InMemoryUserDetailsManager mgr;
-    private static HashMap<String, String> loaded = new HashMap<>();
+    private HashMap<String, String> loaded = new HashMap<>();
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -49,7 +49,7 @@ public class CsvAuthFileLoader extends FileWatchdog {
         super(filename);
         this.mgr = mgr;
         this.passwordEncoder = passwordEncoder;
-        
+
         logger.debug("cstor CsvUserFileLoader filename [{}]", filename);
 
         // put some default starter accounts

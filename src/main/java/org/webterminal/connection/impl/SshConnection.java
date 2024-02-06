@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class SshConnection extends Connection {
         channel.connect(5000);
 
         InputStream inputStream = channel.getInputStream();
-        
+
         logger.debug("ssh session connected {}", terminalSessionInfo);
 
         blockingRead(inputStream);
@@ -98,7 +99,7 @@ public class SshConnection extends Connection {
     public void send(String data) throws IOException {
         if (isAlive()) {
             OutputStream outputStream = channel.getOutputStream();
-            outputStream.write(data.getBytes());
+            outputStream.write(data.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
 
             terminalSessionInfo.setTrafficTimeNow();

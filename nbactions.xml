@@ -68,4 +68,14 @@
                 <exec.appArgs>--logging.level.org.webterminal=debug</exec.appArgs>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-SpotBugs GUI</actionName>
+            <displayName>SpotBugs GUI</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>compile</goal>
+                <goal>spotbugs:spotbugs</goal>
+                <goal>spotbugs:gui</goal>
+            </goals>
+        </action>
     </actions>
