@@ -19,12 +19,11 @@
     </properties>
     <repositories>
         <repository>
-            <id>bintray.com</id>
-            <name>need for purejavacomm related jars</name>
-            <url>https://jcenter.bintray.com/</url>
+            <id>need-for-purejavacomm-related-jars</id>
+            <url>https://packages.jetbrains.team/maven/p/ij/intellij-dependencies</url>
         </repository>
         <repository>
-            <id>local repository for purejavacomm just in case</id>
+            <id>local-repository-for-purejavacomm-just-in-case</id>
             <url>file:local-repository</url>
         </repository>
     </repositories>
