@@ -27,8 +27,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import javax.net.ssl.SSLContext;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
+import java.nio.charset.Charset;
+import org.springframework.web.util.UriUtils;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -136,12 +136,11 @@ public class JumpBoxController {
      * @param authentication
      * @param httpRequest
      * @return
-     * @throws URIException
      */
     @GetMapping("/restricted/sessions")
     public String sessions(@RequestParam(name = "status", required = false) String status, Model model,
             Authentication authentication,
-            HttpServletRequest httpRequest) throws URIException {
+            HttpServletRequest httpRequest) {
 
         String userRole;
         // this is to show sessions request as an outside REST client
@@ -154,7 +153,7 @@ public class JumpBoxController {
         } else {
             // fetch only belong to user
             url = httpRequest.getScheme() + "://localhost:" + httpRequest.getServerPort() + "/internal/sessions?user="
-                    + URIUtil.encodeWithinQuery(authentication.getName());
+                    + UriUtils.encodeQueryParam(authentication.getName(), Charset.defaultCharset());
             userRole = "USER";
         }
         logger.debug("REST call {} to get sessions", url);
