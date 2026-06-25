@@ -14,7 +14,7 @@ convert serial ports for legacy servers/network elements. It even provides a way
 
 Requirements:
 
-  - Java 11 or above (not a hard requirement, only because of dependencies)
+  - Java 17 or above
   - maven (for build, compatible with your Java version)
   - Linux/unix based server for deployment for full functionality (Windows doesn't really have terminal and/or pty anyway)
   

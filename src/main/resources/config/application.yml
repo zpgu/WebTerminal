@@ -31,7 +31,7 @@ spring:
     suffix: .html
   jackson:
     serialization:
-      indent_output: true
+      indent-output: true
   web:
     resources:
       cache.period: 1d

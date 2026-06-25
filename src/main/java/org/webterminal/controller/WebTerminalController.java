@@ -30,7 +30,7 @@ import java.util.UUID;
 //import com.fasterxml.uuid.EthernetAddress;
 //import com.fasterxml.uuid.Generators;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormatter;

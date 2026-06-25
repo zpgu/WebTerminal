@@ -26,22 +26,16 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import javax.net.ssl.SSLContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import org.springframework.web.util.UriUtils;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-//import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.ssl.SSLContexts;
-//import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -301,23 +295,18 @@ public class JumpBoxController {
             return this.restTemplate;
         } else {
             if (this.restTemplatSSL == null) {
-                TrustAllStrategy acceptingTrustStrategy = new TrustAllStrategy();
-                SSLContext sslContext;
                 try {
-                    sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-                    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
-                            NoopHostnameVerifier.INSTANCE);
+                    SSLContext sslContext = SSLContextBuilder.create()
+                            .loadTrustMaterial(TrustAllStrategy.INSTANCE)
+                            .build();
+                    SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
+                            sslContext, NoopHostnameVerifier.INSTANCE);
 
-                    Registry<ConnectionSocketFactory> socketFactoryRegistry
-                            = RegistryBuilder.<ConnectionSocketFactory>create()
-                                    .register("https", sslsf)
-                                    .register("http", new PlainConnectionSocketFactory())
-                                    .build();
-
-                    BasicHttpClientConnectionManager connectionManager
-                            = new BasicHttpClientConnectionManager(socketFactoryRegistry);
-                    CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
-                            .setConnectionManager(connectionManager).build();
+                    HttpClient httpClient = HttpClients.custom()
+                            .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+                                    .setSSLSocketFactory(sslSocketFactory)
+                                    .build())
+                            .build();
 
                     HttpComponentsClientHttpRequestFactory requestFactory
                             = new HttpComponentsClientHttpRequestFactory(httpClient);

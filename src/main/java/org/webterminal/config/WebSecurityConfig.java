@@ -22,19 +22,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
-//@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfig {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
@@ -48,31 +48,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/internal/**").access(acl)
-                .antMatchers("/restricted/**").access("hasRole('USER') or hasRole('ADMIN')")
-                .antMatchers("/session").permitAll()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/js/**").permitAll()
-                .antMatchers("/css/**").permitAll()
-                .antMatchers("/webterminal").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .and()
-                .cors()
-                .and()
-                .csrf().disable();
-
-        http.formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/restricted/jumpbox", true)
-                .failureUrl("/login?error=true");
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/internal/**").access(new WebExpressionAuthorizationManager(acl))
+                        .requestMatchers("/restricted/**").access(new WebExpressionAuthorizationManager("hasRole('USER') or hasRole('ADMIN')"))
+                        .requestMatchers("/session", "/login", "/js/**", "/css/**", "/webterminal").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/restricted/jumpbox", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+                .logout(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
@@ -80,20 +70,16 @@ public class WebSecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         logger.debug("AUTH userFile [{}]", userFile);
-        
+
         InMemoryUserDetailsManager mgr = new InMemoryUserDetailsManager();
-        
+
         CsvAuthFileLoader watchFile = new CsvAuthFileLoader(userFile, mgr, passwordEncoder);
         watchFile.reload();
         watchFile.start();
-        
+
         return mgr;
     }
-    
-    /**
-     *
-     * @return
-     */
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
