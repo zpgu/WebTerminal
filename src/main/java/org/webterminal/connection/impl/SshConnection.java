@@ -73,7 +73,10 @@ public class SshConnection extends Connection {
         config.put("StrictHostKeyChecking", "no");
         session = jSch.getSession(terminalSessionInfo.getUsername(), terminalSessionInfo.getHost(), terminalSessionInfo.getPort());
         session.setConfig(config);
-        session.setPassword(terminalSessionInfo.getPassword());
+        String password = terminalSessionInfo.getPassword();
+        if (password != null) {
+            session.setPassword(password.getBytes(StandardCharsets.UTF_8));
+        }
         session.connect(10000);
 
         channel = session.openChannel("shell");

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 // more than a pojo, but ...
 public class TerminalSessionInfo {
 
-    private boolean suspended = false;
+    private volatile boolean suspended = false;
 
     private String sessionType;          //   NEW/JOIN/TAKE/WATCH, default NEW
     private String token;
@@ -49,7 +49,7 @@ public class TerminalSessionInfo {
     private String host;
     private Integer port;
     private String connectionType;
-    private boolean usePty;
+    private volatile boolean usePty;
     private String username;
     private String password;
     private String webUserName;
@@ -58,16 +58,16 @@ public class TerminalSessionInfo {
     private Integer maxIdleTime;
     private String auditLogging;
     private Integer fontSize;
-    private boolean visibleToAll;
+    private volatile boolean visibleToAll;
 
     private String inTime;
 
     private volatile boolean ready;
     private String sessionId;
-    private long lastTrafficTime = 0;   // to track idle timeout
+    private volatile long lastTrafficTime = 0;   // to track idle timeout
 
-    private int rows = 24;
-    private int cols = 80;
+    private volatile int rows = 24;
+    private volatile int cols = 80;
 
     // to track related sessions for JOIN/WATCH
     private TerminalSessionInfo parent;

@@ -32,8 +32,9 @@ import org.springframework.web.util.UriUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.joda.time.DateTime;
@@ -299,12 +300,14 @@ public class JumpBoxController {
                     SSLContext sslContext = SSLContextBuilder.create()
                             .loadTrustMaterial(TrustAllStrategy.INSTANCE)
                             .build();
-                    SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
-                            sslContext, NoopHostnameVerifier.INSTANCE);
+                    TlsSocketStrategy tlsStrategy = ClientTlsStrategyBuilder.create()
+                            .setSslContext(sslContext)
+                            .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                            .buildClassic();
 
                     HttpClient httpClient = HttpClients.custom()
                             .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
-                                    .setSSLSocketFactory(sslSocketFactory)
+                                    .setTlsSocketStrategy(tlsStrategy)
                                     .build())
                             .build();
 

@@ -7,6 +7,14 @@
         <link rel="stylesheet" href="../css/bootstrap.min.css">
     </head>
     <body>
+        <script>
+             window.onpageshow = function(event) {
+                 if (event.persisted) {
+                     window.location.reload();
+                 }
+             };
+        </script>
+
         <h3 align="center"><span th:text="${title}"></span></h3>
         <!--div align="center"><a th:href="@{/logout}" class="btn btn-dark">Sign Out</a></div-->
         <br/>
