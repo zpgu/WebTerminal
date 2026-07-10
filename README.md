@@ -2,15 +2,15 @@
 #### Command line terminal via web browsers, for SSH/Telnet/TN3270 accesses (xterm.js with Java backend)
 
 Why another tool for terminal access? Plenty already available (in nodejs/python/...):
-* good to have choices, not many with Java backend anyway
-* some unique features (session sharing/suspend/resume, screen size propagation)
+* Java backend
+* some unique features (session sharing/suspend/resume, screen resize propagation)
 
 This application provides **terminal** access to any device that it can reach, presenting it in your browser (w/ xterm.js),
 features include session sharing, suspend/resume sessions, multiple modes of access (ssh/telnet/tn3270) to various types of target
 devices, maximum compatibility using pty access to some difficult/crusty old telnet devices, such as terminal/console servers that
 convert serial ports for legacy servers/network elements. It even provides a way to access TN3270 mainframe hosts in pty/c3270 mode.
 
-### Spring boot with xterm.js, websocket for bidirectional data flow, pty for compatibility/flexibility
+### Spring boot with xterm.js, websocket for persistent connections and bidirectional data flow, pty for compatibility/flexibility
 
 Requirements:
 
@@ -81,6 +81,9 @@ I named it webterminal and used org.webterminal namespace for lack of better cho
 Project should load easily into your Java IDE of choice.
 
 I hope you find this program useful. Your questions/suggestions/ideas/bug reports/contributions/offers are welcome.
+
+### TODO
+* Update UI dependent packages
 
 ### Security consideration:
 * SSL certs included is self signed for obvious reason ($$$)
