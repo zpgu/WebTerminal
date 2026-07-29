@@ -82,8 +82,24 @@ Project should load easily into your Java IDE of choice.
 
 I hope you find this program useful. Your questions/suggestions/ideas/bug reports/contributions/offers are welcome.
 
+### Refreshing vendored xterm.js (and addon-fit) files
+
+Browser assets are copied from npm into `src/main/resources/static`. To upgrade xterm.js, bump versions in `package.json`, then run either:
+
+```
+npm run refresh-xterm
+```
+
+or (requires Node/npm on PATH):
+
+```
+mvn -Pvendor-xterm validate
+```
+
+Commit the updated files under `src/main/resources/static/` after refreshing.
+
 ### TODO
-* Update UI dependent packages
+* Better UI
 
 ### Security consideration:
 * SSL certs included is self signed for obvious reason ($$$)

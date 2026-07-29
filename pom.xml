@@ -23,6 +23,7 @@
         <joda-time.version>2.14.0</joda-time.version>
         <java-uuid-generator.version>5.1.0</java-uuid-generator.version>
         <cloning.version>1.12.0</cloning.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -130,4 +131,34 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>vendor-xterm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>refresh-xterm-assets</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <arguments>
+                                        <argument>run</argument>
+                                        <argument>refresh-xterm</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
